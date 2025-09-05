@@ -13,12 +13,51 @@ components:
       name: API_TOKEN
       type: apiKey
       in: header
+  schemas:
+    Product:
+      title: Product
+      x-stoplight:
+        id: 8ydxjxwgyklbn
+      type: object
+      x-examples:
+        Product with all variants:
+          id: '35123512352'
+          variant: ALL
+          totalVariant: 0
+        'Product with specific variants ':
+          id: '35123512352'
+          variant:
+            - '23523523523'
+            - '32523523223'
+          totalVariant: 3
+      required:
+        - id
+        - variant
+        - totalVariant
+      properties:
+        id:
+          type: string
+          x-stoplight:
+            id: j5cm8g7omgto9
+          example: '35123512352'
+        variant:
+          type:
+            - array
+            - string
+          x-stoplight:
+            id: 8cge1xxrygmz2
+          items: {}
+        totalVariant:
+          type: number
+          x-stoplight:
+            id: m49svle29s28d
+      description: ''
 paths:
-  /v1/metafield/register:
+  '/v1/recommend/{recommenderType}/trigger':
     post:
       tags:
         - default
-      summary: Register write metafield for products
+      summary: Trigger write metafield for products
       requestBody:
         content:
           application/json:
@@ -27,7 +66,6 @@ paths:
               required:
                 - shopId
                 - originalProduct
-                - recommendType
               properties:
                 excludeProducts:
                   type: array
@@ -35,10 +73,7 @@ paths:
                     id: ffi3rryw5j9rm
                   description: exclude product ids
                   items:
-                    x-stoplight:
-                      id: 4fnyff1tn1o0h
-                    type: string
-                    example: '52352352352'
+                    $ref: '#/components/schemas/Product'
                 shopId:
                   type: string
                   x-stoplight:
@@ -60,44 +95,56 @@ paths:
                         - tags
                         - specific
                     items:
-                      type: array
+                      type:
+                        - array
+                        - string
                       x-stoplight:
                         id: 2xhwjh1ucdpfu
-                      items:
-                        x-stoplight:
-                          id: dha3nsstl6n7x
-                        type: string
-                recommendType:
-                  x-stoplight:
-                    id: pny60vdve0xms
-                  enum:
-                    - fbt
+                      items: {}
             examples:
               Register with all products:
                 value:
                   excludeProducts:
-                    - '52352352352'
+                    - id: '35123512352'
+                      variant: ALL
+                      totalVariant: 0
+                    - id: '35123512352'
+                      variant:
+                        - '35235235'
+                        - '352352'
+                      totalVariant: 3
                   shopId: '23512351235125'
                   originalProduct:
                     type: all
-                    items:
-                      - string
-                  recommendType: fbt
+                    items: []
               Register with collections:
                 value:
                   excludeProducts:
-                    - '52352352352'
+                    - id: '35123512352'
+                      variant: ALL
+                      totalVariant: 0
+                    - id: '35123512352'
+                      variant:
+                        - '35235235'
+                        - '352352'
+                      totalVariant: 3
                   shopId: '23512351235125'
                   originalProduct:
                     type: collections
                     items:
                       - '23512351235125'
                       - '84512351235235'
-                  recommendType: fbt
               Register with products tags:
                 value:
                   excludeProducts:
-                    - '52352352352'
+                    - id: '35123512352'
+                      variant: ALL
+                      totalVariant: 0
+                    - id: '35123512352'
+                      variant:
+                        - '35235235'
+                        - '352352'
+                      totalVariant: 3
                   shopId: '23512351235125'
                   originalProduct:
                     type: tags
@@ -105,19 +152,29 @@ paths:
                       - adidas
                       - autumn
                       - summer
-                  recommendType: fbt
               Register with specific products:
                 value:
                   excludeProducts:
-                    - '52352352352'
+                    - id: '35123512352'
+                      variant: ALL
+                      totalVariant: 0
+                    - id: '35123512352'
+                      variant:
+                        - '35235235'
+                        - '352352'
+                      totalVariant: 3
                   shopId: '23512351235125'
                   originalProduct:
                     type: specific
                     items:
-                      - '32352352352'
-                      - '2523523512'
-                      - '36363434634'
-                  recommendType: fbt
+                      - id: '35123512352'
+                        variant: ALL
+                        totalVariant: 5
+                      - id: '35123512323'
+                        variant:
+                          - '35235235'
+                          - '352352'
+                        totalVariant: 3
       security:
         - API_TOKEN: []
       parameters: []
@@ -152,4 +209,12 @@ paths:
       operationId: ''
       x-stoplight:
         id: t3e9eizpislfh
-    parameters: []
+    parameters:
+      - schema:
+          type: string
+          example: fbt
+          enum:
+            - fbt
+        name: recommenderType
+        in: path
+        required: true
