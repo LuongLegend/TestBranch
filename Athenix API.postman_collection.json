@@ -1,0 +1,67 @@
+{
+	"info": {
+		"_postman_id": "c1b174b6-7bbd-4e2c-9770-7e1198597378",
+		"name": "Athenix API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10268629"
+	},
+	"item": [
+		{
+			"name": "Active",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{API_TOKEN}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "API_TOKEN",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"$schema\": \"http://json-schema.org/draft-04/schema\",\n    \"description\": \"\",\n    \"type\": \"object\",\n    \"properties\": {}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://bc-server.athenix.com/v1/register?shop_domain=abc.myshopify.com",
+					"protocol": "https",
+					"host": [
+						"bc-server",
+						"athenix",
+						"com"
+					],
+					"path": [
+						"v1",
+						"register"
+					],
+					"query": [
+						{
+							"key": "shop_domain",
+							"value": "abc.myshopify.com",
+							"description": "shop shopify domain"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

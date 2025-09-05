@@ -1,0 +1,155 @@
+openapi: 3.0.0
+info:
+  title: Athenix API
+  version: 1.0.0
+servers:
+  - url: 'https://athenix.bcserver.xyz'
+    description: Athenix dev api
+  - url: 'https://api.athenix.ai'
+    description: Athenix Prod api
+components:
+  securitySchemes:
+    API_TOKEN:
+      name: API_TOKEN
+      type: apiKey
+      in: header
+paths:
+  /v1/metafield/register:
+    post:
+      tags:
+        - default
+      summary: Register write metafield for products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - shopId
+                - originalProduct
+                - recommendType
+              properties:
+                excludeProducts:
+                  type: array
+                  x-stoplight:
+                    id: ffi3rryw5j9rm
+                  description: exclude product ids
+                  items:
+                    x-stoplight:
+                      id: 4fnyff1tn1o0h
+                    type: string
+                    example: '52352352352'
+                shopId:
+                  type: string
+                  x-stoplight:
+                    id: uqy9ooa8f1907
+                  example: '23512351235125'
+                originalProduct:
+                  type: object
+                  x-stoplight:
+                    id: zojmc35hnkp4i
+                  required:
+                    - type
+                  properties:
+                    type:
+                      x-stoplight:
+                        id: 8cf3qp0np2rst
+                      enum:
+                        - all
+                        - collections
+                        - tags
+                        - specific
+                    items:
+                      type: array
+                      x-stoplight:
+                        id: 2xhwjh1ucdpfu
+                      items:
+                        x-stoplight:
+                          id: dha3nsstl6n7x
+                        type: string
+                recommendType:
+                  x-stoplight:
+                    id: pny60vdve0xms
+                  enum:
+                    - fbt
+            examples:
+              Register with all products:
+                value:
+                  excludeProducts:
+                    - '52352352352'
+                  shopId: '23512351235125'
+                  originalProduct:
+                    type: all
+                    items:
+                      - string
+                  recommendType: fbt
+              Register with collections:
+                value:
+                  excludeProducts:
+                    - '52352352352'
+                  shopId: '23512351235125'
+                  originalProduct:
+                    type: collections
+                    items:
+                      - '23512351235125'
+                      - '84512351235235'
+                  recommendType: fbt
+              Register with products tags:
+                value:
+                  excludeProducts:
+                    - '52352352352'
+                  shopId: '23512351235125'
+                  originalProduct:
+                    type: tags
+                    items:
+                      - adidas
+                      - autumn
+                      - summer
+                  recommendType: fbt
+              Register with specific products:
+                value:
+                  excludeProducts:
+                    - '52352352352'
+                  shopId: '23512351235125'
+                  originalProduct:
+                    type: specific
+                    items:
+                      - '32352352352'
+                      - '2523523512'
+                      - '36363434634'
+                  recommendType: fbt
+      security:
+        - API_TOKEN: []
+      parameters: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    x-stoplight:
+                      id: c3kn7wuhckano
+                    example: successfully
+              examples:
+                Example 1:
+                  value:
+                    message: successfully
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    x-stoplight:
+                      id: ibjgavc9nzesc
+      operationId: ''
+      x-stoplight:
+        id: t3e9eizpislfh
+    parameters: []
