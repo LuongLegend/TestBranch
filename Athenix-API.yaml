@@ -1,134 +1,92 @@
 openapi: 3.0.0
 info:
-  title: Athenix API
   version: 1.0.0
+  title: Athenix API
 servers:
   - url: 'https://athenix.bcserver.xyz'
     description: Athenix dev api
   - url: 'https://api.athenix.ai'
     description: Athenix Prod api
-components:
-  securitySchemes:
-    API_TOKEN:
-      name: API_TOKEN
-      type: apiKey
-      in: header
-  schemas:
-    Product:
-      title: Product
-      x-stoplight:
-        id: 8ydxjxwgyklbn
-      type: object
-      x-examples:
-        Product with all variants:
-          id: '35123512352'
-          variant: ALL
-          totalVariant: 0
-        'Product with specific variants ':
-          id: '35123512352'
-          variant:
-            - '23523523523'
-            - '32523523223'
-          totalVariant: 3
-      required:
-        - id
-        - variant
-        - totalVariant
-      properties:
-        id:
-          type: string
-          x-stoplight:
-            id: j5cm8g7omgto9
-          example: '35123512352'
-        variant:
-          type:
-            - array
-            - string
-          x-stoplight:
-            id: 8cge1xxrygmz2
-          items: {}
-        totalVariant:
-          type: number
-          x-stoplight:
-            id: m49svle29s28d
-      description: ''
 paths:
-  '/v1/recommend/{recommenderType}/trigger':
+  '/v1/platform/{platformName}/shop/{platformShopId}/recommend/{recommenderType}/fine-tuning':
     post:
       tags:
-        - default
-      summary: Trigger write metafield for products
+        - partner
+      summary: Fine tuning active ai products recommend
+      parameters:
+        - name: platformName
+          in: path
+          required: true
+          description: platform name
+          schema:
+            type: string
+            enum:
+              - shopify
+            example: shopify
+        - name: platformShopId
+          in: path
+          required: true
+          description: platform shop id
+          schema:
+            type: string
+            example: '12345678'
+        - name: recommenderType
+          in: path
+          required: true
+          description: recommendation type
+          schema:
+            type: string
+            enum:
+              - fbt
+            example: fbt
       requestBody:
         content:
           application/json:
             schema:
               type: object
               required:
-                - shopId
                 - originalProduct
               properties:
                 excludeProducts:
                   type: array
-                  x-stoplight:
-                    id: ffi3rryw5j9rm
                   description: exclude product ids
                   items:
                     $ref: '#/components/schemas/Product'
-                shopId:
-                  type: string
-                  x-stoplight:
-                    id: uqy9ooa8f1907
-                  example: '23512351235125'
                 originalProduct:
                   type: object
-                  x-stoplight:
-                    id: zojmc35hnkp4i
                   required:
                     - type
                   properties:
                     type:
-                      x-stoplight:
-                        id: 8cf3qp0np2rst
+                      type: string
                       enum:
                         - all
                         - collections
                         - tags
                         - specific
                     items:
-                      type:
-                        - array
-                        - string
-                      x-stoplight:
-                        id: 2xhwjh1ucdpfu
-                      items: {}
+                      oneOf:
+                        - type: array
+                          items:
+                            type: string
+                        - type: string
             examples:
               Register with all products:
                 value:
                   excludeProducts:
                     - id: '35123512352'
-                      variant: ALL
+                      variant: all
                       totalVariant: 0
                     - id: '35123512352'
                       variant:
                         - '35235235'
                         - '352352'
                       totalVariant: 3
-                  shopId: '23512351235125'
                   originalProduct:
                     type: all
                     items: []
               Register with collections:
                 value:
-                  excludeProducts:
-                    - id: '35123512352'
-                      variant: ALL
-                      totalVariant: 0
-                    - id: '35123512352'
-                      variant:
-                        - '35235235'
-                        - '352352'
-                      totalVariant: 3
-                  shopId: '23512351235125'
                   originalProduct:
                     type: collections
                     items:
@@ -136,16 +94,6 @@ paths:
                       - '84512351235235'
               Register with products tags:
                 value:
-                  excludeProducts:
-                    - id: '35123512352'
-                      variant: ALL
-                      totalVariant: 0
-                    - id: '35123512352'
-                      variant:
-                        - '35235235'
-                        - '352352'
-                      totalVariant: 3
-                  shopId: '23512351235125'
                   originalProduct:
                     type: tags
                     items:
@@ -154,67 +102,153 @@ paths:
                       - summer
               Register with specific products:
                 value:
-                  excludeProducts:
-                    - id: '35123512352'
-                      variant: ALL
-                      totalVariant: 0
-                    - id: '35123512352'
-                      variant:
-                        - '35235235'
-                        - '352352'
-                      totalVariant: 3
-                  shopId: '23512351235125'
                   originalProduct:
                     type: specific
                     items:
                       - id: '35123512352'
-                        variant: ALL
+                        variant: all
                         totalVariant: 5
                       - id: '35123512323'
                         variant:
                           - '35235235'
                           - '352352'
                         totalVariant: 3
-      security:
-        - API_TOKEN: []
-      parameters: []
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    x-stoplight:
-                      id: c3kn7wuhckano
-                    example: successfully
+                $ref: '#/components/schemas/SuccessResponse'
               examples:
-                Example 1:
+                Active fine tuning succesfully!:
                   value:
-                    message: successfully
+                    data:
+                      msg: Active fine tuning fbt recommend successfully
+                    error: 'null'
+                    code: 200
+                No configuration change!:
+                  value:
+                    data:
+                      msg: 'No configuration change, skip active fine tuning fbt recommend'
+                    error: 'null'
+                    code: 200
+        '401':
+          description: Unauthentiation response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Token missing:
+                  value:
+                    data: 'null'
+                    error:
+                      message: API_TOKEN is missing
+                      code: INVALID_TOKEN
+                Invalid token:
+                  value:
+                    data: 'null'
+                    error:
+                      message: API_TOKEN is invalid
+                      code: INVALID_TOKEN
+        '404':
+          description: Not found response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Shop not found:
+                  value:
+                    data: 'null'
+                    error:
+                      message: shop not found
+                      code: NOT_FOUND
         '500':
           description: Internal Server Error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    x-stoplight:
-                      id: ibjgavc9nzesc
-      operationId: ''
-      x-stoplight:
-        id: t3e9eizpislfh
-    parameters:
-      - schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - API_TOKEN: []
+      servers:
+        - url: 'https://athenix.bcserver.xyz'
+          description: Athenix dev api
+        - url: 'https://api.athenix.ai'
+          description: Athenix Prod api
+components:
+  securitySchemes:
+    API_TOKEN:
+      type: apiKey
+      name: API_TOKEN
+      in: header
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            msg:
+              type: string
+              example: successfully
+        error:
           type: string
-          example: fbt
+          example: 'null'
+        code:
+          type: number
           enum:
-            - fbt
-        name: recommenderType
-        in: path
-        required: true
+            - 200
+          example: 200
+    ErrorResponse:
+      type: object
+      properties:
+        data:
+          oneOf:
+            - type: string
+              example: 'null'
+            - type: object
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+              example: API_TOKEN is missing
+            code:
+              type: string
+              enum:
+                - INVALID_TOKEN
+                - NOT_FOUND
+              example: INVALID_TOKEN
+    Product:
+      type: object
+      title: Product
+      properties:
+        id:
+          type: string
+          example: '35123512352'
+        variant:
+          oneOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+        totalVariant:
+          type: number
+      required:
+        - id
+        - variant
+        - totalVariant
+      x-examples:
+        Product with all variants:
+          id: '35123512352'
+          variant: all
+          totalVariant: 0
+        'Product with specific variants ':
+          id: '35123512352'
+          variant:
+            - '23523523523'
+            - '32523523223'
+          totalVariant: 3
